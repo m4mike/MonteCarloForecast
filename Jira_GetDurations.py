@@ -14,9 +14,7 @@ import Jira
 # Results are written to issue-duration.csv
 
 
-JQLProduct = 'status changed to (Done, Closed) DURING (-30d, now()) and project = "Product Group Development" and issuetype in ( Story, Task, Bug,Improvement )'
-JQL = "status changed to (Done, Closed) DURING (-60d, now()) and project in (PSLM0036, TDL4044, TH4035, ST4102, RS4103, BPS4105, VLAIOSG)  and issuetype in ( Story, Task, Bug,Improvement )"
-
+JQL = 'status changed to (Done, Closed) DURING (-30d, now()) and project = "Product Group Development" and issuetype in ( Story, Task, Bug,Improvement )'
 
 
 #################### MAIN ###################################
@@ -25,8 +23,8 @@ async def main():
     print("Getting last closed items and updating issue_duration csv, it will opnly add new issues")
     print("_______________________________________________________________________________________")
 
-    rv_jira = Jira.Jira()
-    issues = await rv_jira.getJQL(JQL, fields=f"issuetype,key,summary,resolved,{rv_jira.STORYPOINTS}")
+    jira = Jira.Jira()
+    issues = await jira.getJQL(JQL, fields=f"issuetype,key,summary,resolved,{jira.STORYPOINTS}")
     try:
         df = pd.read_csv("issue_duration.csv", sep=";")
         df.set_index('Issue Key', inplace=True)
@@ -44,7 +42,7 @@ async def main():
             
             issue_type = issue['fields']['issuetype']['name']
             changelog_url = f'/rest/api/2/issue/{issue_key}?expand=changelog'
-            changelog_response = json.loads(await rv_jira.getFromAPI(changelog_url))
+            changelog_response = json.loads(await jira.getFromAPI(changelog_url))
             changelog = changelog_response['changelog']['histories']
 
             foundDone = False
@@ -71,7 +69,7 @@ async def main():
                 new_ones += 1
                 duration = (to_Done - to_Start).total_seconds() / 3600 / 24  # Convert duration to days with decimal hours
 
-                points = 0 if issue["fields"][rv_jira.STORYPOINTS] is None else issue["fields"][rv_jira.STORYPOINTS]
+                points = 0 if issue["fields"][jira.STORYPOINTS] is None else issue["fields"][jira.STORYPOINTS]
                 # Append issue data to the DataFrame
                 df.loc[issue_key] = {
                     "Done Date": to_Done.strftime('%Y-%m-%d'),

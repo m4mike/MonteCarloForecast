@@ -7,3 +7,6 @@ issues_by_date_count.csv
 issues_by_date_monthly.csv
 issues_by_date_weekly.csv
 issue_duration.csv
+Charts/MC_HowMany.png
+Charts/MC_When.png
+.gitignore

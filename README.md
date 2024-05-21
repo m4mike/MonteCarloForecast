@@ -42,3 +42,23 @@ Name | Description |
 --RemainingItems | The number of remaining items for the simulation. Default is 78. |
 --SaveCharts | If specified, the charts created during the MC Simulation will be stored in a subfolder called "Charts". |
 --ItemsName | The name of the items column in the csv file. Default is "Points" |
+
+
+## Preparing data from Miro
+The Jira_Getdurations file is a python script that can be used to get the durations of the issues from Miro. 
+It Find all Stories, Tasks , Bugs that were closed in the last x days and lookup up the cycle time for them. (Difference between Done and in Progress)
+# To Do : For bugs Lead time is a better metric ( Duration between Done and Created)
+ Results are written to issue-duration.csv
+ In the code you will need to adapt the JQL to your needs. 
+ Typicaly it will be something like : 
+    status changed to (Done, Closed) DURING (-30d, now()) and project = "Your jira project" and issuetype in ( Story, Task, Bug, Improvement )
+
+Jira.py is a little wrapper to connect to jira and get the data from the jira project. It is used by Jira_GetDurations.py
+the getFromAPI function is used to get the data from the jira API and will loop over multiple 50 item pages and return all the data in a pandas dataframe. 
+It will read a secrets.yaml file to get the username and password for the jira API. 
+That file should contain a valid token to acces your jira API. 
+    TOKEN : "get your personal access token from your jira profile "
+    API_URL : "https://yourjirainstance.atlassian.net"
+
+
+
